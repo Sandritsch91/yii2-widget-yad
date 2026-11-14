@@ -76,6 +76,34 @@ echo Yad::widget(['name' => 'day', 'inline' => true]);
 The value is kept in a hidden input with the widget's `id`; the calendar `<div>` gets `<id>-yad`
 (`containerOptions` sets its attributes).
 
+### Date ranges
+
+`YadRange` renders a start and an end picker linked with yad's
+[`Yad.range()`](https://github.com/Sandritsch91/yad/blob/main/docs/date-ranges.md): the end cannot be before
+the start, the start cannot be after the end (including the time in `MODE_DATETIME`), and both calendars
+highlight the range.
+
+```php
+use sandritsch91\yii2\yad\YadRange;
+
+echo $form->field($model, 'start')->widget(YadRange::class, [
+    'attributeTo' => 'end',
+    'submitFormat' => true,
+    'clientOptions' => ['minDate' => 0, 'numberOfMonths' => 2],
+]);
+
+echo YadRange::widget([
+    'name' => 'from',
+    'nameTo' => 'to',
+    'inline' => true,
+    'template' => '<div class="d-flex gap-3">{from}{to}</div>',
+]);
+```
+
+All `Yad` properties apply to both pickers. `options`, `name`, `value` and `attribute` belong to the start;
+`optionsTo`, `nameTo`, `valueTo` and `attributeTo` to the end. `template` (default `'{from} – {to}'`) puts
+them together, e.g. `'<div class="input-group">{from}<span class="input-group-text">–</span>{to}</div>'`.
+
 ### Options and events
 
 `clientOptions` is passed to yad, see its [options](https://github.com/Sandritsch91/yad/blob/main/docs/options.md).

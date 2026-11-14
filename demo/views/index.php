@@ -3,6 +3,7 @@
 /** @var yii\web\View $this */
 
 use sandritsch91\yii2\yad\Yad;
+use sandritsch91\yii2\yad\YadRange;
 use yii\base\DynamicModel;
 use yii\helpers\Html;
 use yii\web\JsExpression;
@@ -10,8 +11,10 @@ use yii\web\JsExpression;
 $model = new DynamicModel([
     'birthday' => '1991-05-17',
     'meeting' => '2026-11-20 15:00:00',
+    'from' => '2026-11-20',
+    'to' => '2026-11-27',
 ]);
-$model->addRule(['birthday', 'meeting'], 'safe');
+$model->addRule(['birthday', 'meeting', 'from', 'to'], 'safe');
 $model->load(Yii::$app->request->post());
 
 $this->beginPage();
@@ -61,6 +64,17 @@ $this->beginPage();
     <label for="inline">Inline, no weekends</label>
     <?= Yad::widget(['name' => 'inline', 'value' => '2026-11-18', 'inline' => true, 'id' => 'inline',
         'clientOptions' => ['beforeShowDay' => new JsExpression('yad.Yad.noWeekends'), 'showWeek' => true]]) ?>
+</div>
+<div class="row">
+    <label for="from">Range, ISO submitted</label>
+    <?= YadRange::widget(['model' => $model, 'attribute' => 'from', 'attributeTo' => 'to',
+        'submitFormat' => true, 'options' => ['id' => 'from'], 'optionsTo' => ['id' => 'to'],
+        'clientOptions' => ['numberOfMonths' => 2]]) ?>
+</div>
+<div class="row">
+    <label>Inline range</label>
+    <?= YadRange::widget(['name' => 'stayFrom', 'nameTo' => 'stayTo', 'value' => '2026-11-18', 'valueTo' => '2026-11-24',
+        'id' => 'stay', 'inline' => true, 'template' => '<div style="display:flex;gap:1rem">{from}{to}</div>']) ?>
 </div>
 <button type="submit">Submit</button>
 <?= Html::endForm() ?>
