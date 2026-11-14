@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.1.0 (2026-11-14)
 
 - Require PHP 8.2 and Yii 2.0.49 or later. Properties, parameters and return values are typed: subclasses that
   override methods (e.g. `init()`, `run()`, `formatValue()`) must declare the same types.
