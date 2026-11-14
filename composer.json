@@ -1,0 +1,59 @@
+{
+    "name": "sandritsch91/yii2-widget-yad",
+    "type": "yii2-extension",
+    "description": "Yii2 input widget for yad (Yet Another Datepicker): a dependency-free date, datetime and time picker",
+    "keywords": [
+        "yii2",
+        "widget",
+        "date",
+        "time",
+        "datepicker",
+        "datetimepicker",
+        "timepicker",
+        "yad"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sandritsch91",
+            "email": "sandritsch91@gmail.com"
+        }
+    ],
+    "support": {
+        "source": "https://github.com/Sandritsch91/yii2-widget-yad",
+        "issues": "https://github.com/Sandritsch91/yii2-widget-yad/issues"
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=7.4",
+        "yiisoft/yii2": "^2.0.20",
+        "npm-asset/sandritsch91--yad": "^1.1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6"
+    },
+    "suggest": {
+        "ext-intl": "To resolve the formatter's 'short', 'medium', 'long' and 'full' formats per locale"
+    },
+    "autoload": {
+        "psr-4": {
+            "sandritsch91\\yii2\\yad\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "sandritsch91\\yii2\\yad\\tests\\": "tests"
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ],
+    "config": {
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true
+        }
+    }
+}
