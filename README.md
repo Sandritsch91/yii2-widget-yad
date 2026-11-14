@@ -1,5 +1,8 @@
 # yii2-widget-yad
 
+[![Tests](https://github.com/Sandritsch91/yii2-widget-yad/actions/workflows/test.yml/badge.svg)](https://github.com/Sandritsch91/yii2-widget-yad/actions/workflows/test.yml)
+[![Packagist](https://img.shields.io/packagist/v/sandritsch91/yii2-widget-yad)](https://packagist.org/packages/sandritsch91/yii2-widget-yad)
+
 A Yii2 input widget for [yad](https://github.com/Sandritsch91/yad) (Yet Another Datepicker): a dependency-free
 date, datetime and time picker with a jQuery UI compatible API, 80+ locales, dark mode and a Bootstrap 5 theme.
 
