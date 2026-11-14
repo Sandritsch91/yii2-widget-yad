@@ -2,6 +2,7 @@
 
 namespace sandritsch91\yii2\yad\tests;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use sandritsch91\yii2\yad\Yad;
 use sandritsch91\yii2\yad\YadAsset;
 use Yii;
@@ -14,10 +15,7 @@ use yii\helpers\FileHelper;
  */
 class AssetCompressTest extends TestCase
 {
-    /**
-     * @var string
-     */
-    private $dir;
+    private string $dir;
 
     protected function setUp(): void
     {
@@ -28,7 +26,7 @@ class AssetCompressTest extends TestCase
         parent::setUp();
     }
 
-    public function testCompressedBundleContainsTheConfiguredLocales()
+    public function testCompressedBundleContainsTheConfiguredLocales(): void
     {
         $bundles = $this->compress(['de', 'fr', 'it']);
 
@@ -51,7 +49,7 @@ class AssetCompressTest extends TestCase
         $this->assertSame(['all'], $bundles[YadAsset::class]['depends']);
     }
 
-    public function testCompressedLocalesRegisterInTheBrowser()
+    public function testCompressedLocalesRegisterInTheBrowser(): void
     {
         $this->compress(['de', 'fr', 'it']);
         $node = $this->findNode();
@@ -72,10 +70,8 @@ JS;
         $this->assertSame(['Januar', 'janvier', 'gennaio', null], json_decode($output, true));
     }
 
-    /**
-     * @dataProvider languageProvider
-     */
-    public function testWidgetUsesTheCompressedBundle($language, $expectedLocaleJs)
+    #[DataProvider('languageProvider')]
+    public function testWidgetUsesTheCompressedBundle(string $language, string $expectedLocaleJs): void
     {
         $bundles = $this->compress(['de', 'fr', 'it']);
         $this->mockApplication([
@@ -92,7 +88,7 @@ JS;
         $this->assertStringContainsString($expectedLocaleJs, $html);
     }
 
-    public function languageProvider()
+    public static function languageProvider(): array
     {
         return [
             'English' => ['en-US', 'var locale = Yad.regional[""] || {};'],
@@ -106,7 +102,7 @@ JS;
         ];
     }
 
-    public function testWithoutCompressionLocalesAreStillLoadedOnDemand()
+    public function testWithoutCompressionLocalesAreStillLoadedOnDemand(): void
     {
         $this->mockApplication(['language' => 'it']);
 
@@ -121,7 +117,7 @@ JS;
      * @param string[] $locales
      * @return array the generated bundle configuration for the web application
      */
-    private function compress(array $locales)
+    private function compress(array $locales): array
     {
         $webApp = Yii::$app;
         $dir = $this->dir;
@@ -147,8 +143,8 @@ JS;
         // compressors are callables in real configs too; plain concatenation keeps the test free of Java tools
         $configFile = "$dir/config.php";
         file_put_contents($configFile, '<?php return array_merge(' . var_export($config, true) . ', [
-            "jsCompressor" => function ($controller, $files, $output) { $controller->combineJsFiles($files, $output); },
-            "cssCompressor" => function ($controller, $files, $output) { $controller->combineCssFiles($files, $output); },
+            "jsCompressor" => fn($controller, $files, $output) => $controller->combineJsFiles($files, $output),
+            "cssCompressor" => fn($controller, $files, $output) => $controller->combineCssFiles($files, $output),
         ]);');
 
         new ConsoleApplication([
@@ -164,7 +160,7 @@ JS;
         return require "$dir/bundles.php";
     }
 
-    private function renderPage($content)
+    private function renderPage(string $content): string
     {
         $view = Yii::$app->view;
         file_put_contents("$this->dir/page.php", '<?php $this->beginPage(); ?><html><head><?php $this->head(); ?></head><body><?php $this->beginBody(); ?><?= $content ?><?php $this->endBody(); ?></body></html><?php $this->endPage(); ?>');
@@ -172,7 +168,7 @@ JS;
         return $view->renderFile("$this->dir/page.php", ['content' => $content]);
     }
 
-    private function findNode()
+    private function findNode(): string
     {
         $command = DIRECTORY_SEPARATOR === '\\' ? 'where node 2>NUL' : 'command -v node 2>/dev/null';
         $node = trim((string)strtok((string)shell_exec($command), "\r\n"));
@@ -189,7 +185,7 @@ JS;
  */
 class SilentAssetController extends AssetController
 {
-    public function stdout($string)
+    public function stdout($string): bool
     {
         return false;
     }

@@ -2,6 +2,7 @@
 
 namespace sandritsch91\yii2\yad\tests;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use sandritsch91\yii2\yad\Yad;
 use sandritsch91\yii2\yad\YadAsset;
 use sandritsch91\yii2\yad\YadBootstrap5Asset;
@@ -12,15 +13,13 @@ use yii\web\JsExpression;
 
 class YadTest extends TestCase
 {
-    /**
-     * @dataProvider localeProvider
-     */
-    public function testResolveLocale($language, $expected)
+    #[DataProvider('localeProvider')]
+    public function testResolveLocale(string $language, ?string $expected): void
     {
         $this->assertSame($expected, Yad::resolveLocale($language));
     }
 
-    public function localeProvider()
+    public static function localeProvider(): array
     {
         return [
             ['de', 'de'],
@@ -41,22 +40,20 @@ class YadTest extends TestCase
         ];
     }
 
-    public function testEveryLocaleHasAFile()
+    public function testEveryLocaleHasAFile(): void
     {
         foreach (Yad::LOCALES as $key) {
             $this->assertFileExists(Yii::getAlias("@npm/sandritsch91--yad/dist/i18n/$key.umd.js"));
         }
     }
 
-    /**
-     * @dataProvider timeFormatProvider
-     */
-    public function testConvertTimeIcuToYad($icu, $expected)
+    #[DataProvider('timeFormatProvider')]
+    public function testConvertTimeIcuToYad(string $icu, string $expected): void
     {
         $this->assertSame($expected, Yad::convertTimeIcuToYad($icu));
     }
 
-    public function timeFormatProvider()
+    public static function timeFormatProvider(): array
     {
         return [
             ['HH:mm', 'HH:mm'],
@@ -68,13 +65,13 @@ class YadTest extends TestCase
         ];
     }
 
-    public function testInvalidMode()
+    public function testInvalidMode(): void
     {
         $this->expectException(InvalidConfigException::class);
         Yad::widget(['name' => 'd', 'mode' => 'week']);
     }
 
-    public function testDateInput()
+    public function testDateInput(): void
     {
         $html = Yad::widget(['name' => 'd', 'value' => '2026-11-20', 'id' => 'd']);
 
@@ -89,7 +86,7 @@ class YadTest extends TestCase
         $this->assertSame(['yad.umd.js', 'i18n/de-CH.umd.js'], Yii::$app->view->assetBundles[YadAsset::class]->js);
     }
 
-    public function testModelDatetimeWithSubmitFormat()
+    public function testModelDatetimeWithSubmitFormat(): void
     {
         $model = new DynamicModel(['start' => '2026-11-20 15:05:00']);
         $model->addRule('start', 'safe');
@@ -118,7 +115,7 @@ class YadTest extends TestCase
         $this->assertStringContainsString('dp.setDate(new Date(2026, 10, 20, 15, 5, 0));', $js);
     }
 
-    public function testInlineTime()
+    public function testInlineTime(): void
     {
         $html = Yad::widget([
             'name' => 't',
@@ -138,7 +135,7 @@ class YadTest extends TestCase
         $this->assertStringContainsString(', 8, 30, 0));', $js);
     }
 
-    public function testClientOptionsEventsAndTheme()
+    public function testClientOptionsEventsAndTheme(): void
     {
         Yad::widget([
             'name' => 'd',
@@ -162,14 +159,14 @@ class YadTest extends TestCase
         $this->assertSame(['yad.umd.js'], Yii::$app->view->assetBundles[YadAsset::class]->js);
     }
 
-    public function testEmptyAndUnparsableValues()
+    public function testEmptyAndUnparsableValues(): void
     {
         $this->assertStringContainsString('value=""', Yad::widget(['name' => 'd', 'value' => null]));
         $this->assertStringContainsString('value="not a date"', Yad::widget(['name' => 'd', 'value' => 'not a date']));
         $this->assertStringNotContainsString('setDate', $this->registeredJs());
     }
 
-    private function registeredJs()
+    private function registeredJs(): string
     {
         return implode("\n", array_merge(...array_values(Yii::$app->view->js)));
     }

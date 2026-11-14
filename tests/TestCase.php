@@ -21,7 +21,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         parent::tearDown();
     }
 
-    protected function mockApplication(array $config = [])
+    protected function mockApplication(array $config = []): void
     {
         $runtime = __DIR__ . '/runtime';
         FileHelper::createDirectory("$runtime/assets");

@@ -14,6 +14,8 @@ date, datetime and time picker with a jQuery UI compatible API, 80+ locales, dar
 
 ## Installation
 
+Requires PHP 8.2 or later and Yii 2.0.49 or later.
+
 ```bash
 composer require sandritsch91/yii2-widget-yad
 ```

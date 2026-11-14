@@ -44,12 +44,12 @@ class YadAsset extends AssetBundle
      * ],
      * ```
      */
-    public $locales = [];
+    public array $locales = [];
 
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -65,9 +65,8 @@ class YadAsset extends AssetBundle
      * with a combined file: the locales are then expected in that file (see [[locales]]).
      *
      * @param string $key a locale key as returned by [[Yad::resolveLocale()]], e.g. `de` or `pt-BR`
-     * @return $this
      */
-    public function addLocale($key)
+    public function addLocale(string $key): static
     {
         if (!in_array('yad.umd.js', $this->js, true)) {
             return $this;

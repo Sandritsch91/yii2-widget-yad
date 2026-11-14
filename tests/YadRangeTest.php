@@ -9,7 +9,7 @@ use yii\base\InvalidConfigException;
 
 class YadRangeTest extends TestCase
 {
-    public function testModel()
+    public function testModel(): void
     {
         $model = new DynamicModel(['start' => '2026-11-20', 'end' => '2026-11-27']);
         $model->addRule(['start', 'end'], 'safe');
@@ -39,7 +39,7 @@ class YadRangeTest extends TestCase
         $this->assertStringContainsString('var range = Yad.range(from, to);', $scripts[2]);
     }
 
-    public function testNamesTemplateAndSharedOptions()
+    public function testNamesTemplateAndSharedOptions(): void
     {
         $html = YadRange::widget([
             'name' => 'from',
@@ -65,7 +65,7 @@ class YadRangeTest extends TestCase
         $this->assertStringContainsString('getElementById("trip-to")', $scripts[2]);
     }
 
-    public function testInline()
+    public function testInline(): void
     {
         $html = YadRange::widget([
             'name' => 'from',
@@ -86,13 +86,13 @@ class YadRangeTest extends TestCase
         $this->assertStringContainsString('if (end && !range.to.getDate()) { range.to.setDate(end); }', $link);
     }
 
-    public function testEndIsRequired()
+    public function testEndIsRequired(): void
     {
         $this->expectException(InvalidConfigException::class);
         YadRange::widget(['name' => 'from']);
     }
 
-    public function testEndAttributeIsRequired()
+    public function testEndAttributeIsRequired(): void
     {
         $model = new DynamicModel(['start' => null]);
         $this->expectException(InvalidConfigException::class);
@@ -102,7 +102,7 @@ class YadRangeTest extends TestCase
     /**
      * @return string[] the scripts registered at the end of the body, in order
      */
-    private function registeredScripts()
+    private function registeredScripts(): array
     {
         return array_values(Yii::$app->view->js[\yii\web\View::POS_END]);
     }

@@ -30,55 +30,50 @@ class YadRange extends Yad
     /**
      * @var string|null the model attribute of the end. Required with [[model]].
      */
-    public $attributeTo;
+    public ?string $attributeTo = null;
     /**
      * @var string|null the input name of the end. Required without [[model]].
      */
-    public $nameTo;
+    public ?string $nameTo = null;
     /**
      * @var mixed the value of the end, without [[model]].
      */
-    public $valueTo;
+    public mixed $valueTo = null;
     /**
      * @var array HTML attributes of the end input. The `class` of [[options]] is used unless set here.
      * The `id` defaults to the attribute's input id or `<id>-to`.
      */
-    public $optionsTo = [];
+    public array $optionsTo = [];
     /**
      * @var string how the two pickers are put together, e.g.
      * `'<div class="input-group">{from}<span class="input-group-text">–</span>{to}</div>'` for Bootstrap.
      */
-    public $template = '{from} – {to}';
+    public string $template = '{from} – {to}';
 
     /**
      * {@inheritdoc}
      * @throws InvalidConfigException
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
-        if ($this->hasModel() && $this->attributeTo === null) {
-            throw new InvalidConfigException("Either 'name' and 'nameTo', or 'model', 'attribute' and 'attributeTo' must be set.");
-        }
-        if (!$this->hasModel() && $this->nameTo === null) {
+        if (($this->hasModel() ? $this->attributeTo : $this->nameTo) === null) {
             throw new InvalidConfigException("Either 'name' and 'nameTo', or 'model', 'attribute' and 'attributeTo' must be set.");
         }
 
-        if (!isset($this->optionsTo['class']) && isset($this->options['class'])) {
-            $this->optionsTo['class'] = $this->options['class'];
+        if (isset($this->options['class'])) {
+            $this->optionsTo['class'] ??= $this->options['class'];
         }
-        if (!isset($this->optionsTo['id'])) {
-            $this->optionsTo['id'] = $this->hasModel()
-                ? Html::getInputId($this->model, $this->attributeTo)
-                : $this->options['id'] . '-to';
-        }
+        $this->optionsTo['id'] ??= $this->hasModel()
+            ? Html::getInputId($this->model, $this->attributeTo)
+            : $this->options['id'] . '-to';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function run()
+    public function run(): string
     {
         $shared = $this->getSharedConfig();
         $containerTo = $this->containerOptions;
@@ -108,7 +103,7 @@ class YadRange extends Yad
     /**
      * @return array the [[Yad]] properties both pickers share
      */
-    protected function getSharedConfig()
+    protected function getSharedConfig(): array
     {
         $properties = array_diff(
             array_keys(get_class_vars(Yad::class)),
@@ -124,26 +119,21 @@ class YadRange extends Yad
     }
 
     /**
-     * @param string $inputId
-     * @param array $containerOptions
      * @return string the id of the element yad is attached to
      */
-    protected function getTargetId($inputId, $containerOptions)
+    protected function getTargetId(string $inputId, array $containerOptions): string
     {
         if (!$this->inline) {
             return $inputId;
         }
 
-        return isset($containerOptions['id']) ? $containerOptions['id'] : "$inputId-yad";
+        return $containerOptions['id'] ?? "$inputId-yad";
     }
 
     /**
      * Links the two pickers. It runs after the pickers' own scripts, which are registered before.
-     *
-     * @param string $fromId
-     * @param string $toId
      */
-    protected function registerRangeScript($fromId, $toId)
+    protected function registerRangeScript(string $fromId, string $toId): void
     {
         $js = <<<JS
 (function () {
