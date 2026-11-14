@@ -137,6 +137,33 @@ To use it everywhere, set it once in the container definitions of your config:
 ],
 ```
 
+### Asset compression
+
+Normally the widget loads the locale of the current language on demand. `yii asset/compress` cannot know
+these, so list the locales your application uses in the `assetManager` section of the compressor config:
+
+```php
+// assets.php, used by: yii asset/compress assets.php config/assets-prod.php
+return [
+    'bundles' => [
+        sandritsch91\yii2\yad\YadAsset::class,
+        // ...
+    ],
+    'assetManager' => [
+        'basePath' => '@webroot/assets',
+        'baseUrl' => '@web/assets',
+        'bundles' => [
+            sandritsch91\yii2\yad\YadAsset::class => ['locales' => ['de', 'fr', 'it']],   // English is built in
+        ],
+    ],
+    // targets, jsCompressor, cssCompressor ...
+];
+```
+
+The locales are then part of the compressed file, and the widget adds no files of its own. Regional
+languages fall back to the language: with `de` compressed, an application in `de-CH` uses the German locale.
+List `de-CH` as well if you want its Swiss specifics.
+
 ## Development
 
 ```bash

@@ -221,6 +221,19 @@ class Yad extends InputWidget
      */
     public static function resolveLocale($language)
     {
+        $keys = static::resolveLocales($language);
+
+        return $keys ? $keys[0] : null;
+    }
+
+    /**
+     * Returns the yad locale keys for a language, most specific first: `de-CH` gives `['de-CH', 'de']`.
+     *
+     * @param string $language
+     * @return string[] empty for English (built in) and unknown languages
+     */
+    public static function resolveLocales($language)
+    {
         $parts = preg_split('/[-_]/', (string)$language);
         $parts[0] = strtolower($parts[0]);
         foreach ($parts as $i => $part) {
@@ -236,16 +249,17 @@ class Yad extends InputWidget
         for ($n = count($parts) - 1; $n > 0; $n--) {
             $candidates[] = implode('-', array_slice($parts, 0, $n));
         }
+        $keys = [];
         foreach ($candidates as $key) {
             if (isset(self::LOCALE_ALIASES[$key])) {
                 $key = self::LOCALE_ALIASES[$key];
             }
-            if (in_array($key, self::LOCALES, true)) {
-                return $key;
+            if (in_array($key, self::LOCALES, true) && !in_array($key, $keys, true)) {
+                $keys[] = $key;
             }
         }
 
-        return null;
+        return $keys;
     }
 
     /**
@@ -449,16 +463,22 @@ class Yad extends InputWidget
             YadBootstrap5Asset::register($view);
         }
 
-        $locale = static::resolveLocale($this->language);
-        if ($locale !== null) {
-            $bundle->addLocale($locale);
+        $locales = static::resolveLocales($this->language);
+        if ($locales) {
+            $bundle->addLocale($locales[0]);
         }
+        // the most specific registered locale wins: a compressed bundle may hold "de" but not "de-CH"
+        $lookup = [];
+        foreach ($locales ?: [''] as $key) {
+            $lookup[] = 'Yad.regional[' . Json::htmlEncode($key) . ']';
+        }
+        $lookup[] = '{}';
 
         $js = [
             'var el = document.getElementById(' . Json::htmlEncode($targetId) . ');',
             'if (!el) { return; }',
             'var Yad = window.yad.Yad;',
-            'var locale = Yad.regional[' . Json::htmlEncode($locale ?: '') . '] || {};',
+            'var locale = ' . implode(' || ', $lookup) . ';',
             'var dp = new Yad(el, Object.assign({}, locale, ' . Json::htmlEncode($clientOptions) . '));',
         ];
         if ($dateParts !== null) {
